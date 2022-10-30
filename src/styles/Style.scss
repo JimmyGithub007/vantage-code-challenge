@@ -21,6 +21,12 @@ input[type='checkbox'] {
     box-shadow: 0 2px 4px $dark-gray-color;
 }
 
+.flex-center {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
 .header {
     @extend .shadow;
     align-items: center;
@@ -47,14 +53,12 @@ input[type='checkbox'] {
 }
 
 .footer {
-    align-items: center;
+    @extend .flex-center;
     background-color: white;
     color: $dark-gray-color;
-    display: flex;
     flex-direction: column;
     gap: 10px;
     height: 80px;
-    justify-content: center;
     padding: 0 24px;
     .icons {
         display: flex;
@@ -88,6 +92,7 @@ input[type='checkbox'] {
         border-bottom: 3px solid $light-gray-color-2;
         position: sticky;
         top: -0.1px;
+        z-index: 1;
         span {
             align-items: center;
             display: flex;
@@ -96,7 +101,7 @@ input[type='checkbox'] {
                 color: $dark-color;
             }
         }
-        &.sort:hover {
+        &.sort-th:hover {
             cursor: pointer;
             background-color: $light-gray-color-2;
         }
@@ -104,7 +109,7 @@ input[type='checkbox'] {
     td {
         border-bottom: 1px solid $light-gray-color-2;
     }
-    tr:hover td, th, .sort {
+    tr:hover td, th, .sort-td {
         background-color: $light-gray-color;
     }
 }
@@ -125,7 +130,6 @@ input[type='checkbox'] {
     background-color: white;
     border: 1px solid $light-gray-color;
     border-radius: 12px;
-    
 }
 
 .dropdown {
@@ -189,9 +193,7 @@ input[type='checkbox'] {
 }
   
 .loader {
-    align-items: center;
-    display: flex;
-    justify-content: center;
+    @extend .flex-center;
     min-height: inherit;
     .container {
         height: 15px;
@@ -222,6 +224,21 @@ input[type='checkbox'] {
     }
 }
 
+.error {
+    @extend .flex-center;
+    animation: fadeIn 1s;
+    flex-direction: column;
+    min-height: calc(100vh - 180px);
+    svg {
+        color: $dark-gray-color;
+        height: 120px;
+        width: 120px;
+    }
+    h2 {
+        margin: 0;
+    }
+}
+
 @media screen and (max-width: 576px) {
     .tbl-title {
         .dropdown {
@@ -230,13 +247,13 @@ input[type='checkbox'] {
     }
     .tbl {
         th {
-            &.sort:hover {
+            &.sort-th:hover {
                 cursor: unset;
                 background-color: $light-gray-color;
             }
         }
-        td {
-            background-color: unset;
+        .sort-td {
+            background-color: white;
         }
     }
 }

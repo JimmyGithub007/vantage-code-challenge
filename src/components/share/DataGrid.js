@@ -91,7 +91,7 @@ const DataGrid = (props) => {
                     {
                         props.columns.map((col, key) => (
                             ((mobile && key < 1) || !mobile) &&
-                            <th className='sort' key={key} onClick={() => { !mobile && handleSort(col.id) } }>
+                            <th className='sort-th' key={key} onClick={() => { !mobile && handleSort(col.id) } }>
                                 <span>{col.name}
                                     {   !mobile && ( order.id === col.id && order.direction ?
                                             (order.direction === 'asc' ? <BiSortAZ /> : <BiSortZA />) : <BiSortAlt2 />
@@ -119,7 +119,7 @@ const DataGrid = (props) => {
                         {
                             props.columns.map((col, k2) => (
                                 ((mobile && k2 < 1) || !mobile) &&
-                                <td className={`${order.id === col.id && order.direction && 'sort'}`} key={k2}>
+                                <td className={`${order.id === col.id && order.direction && 'sort-td'}`} key={k2}>
                                     {_.get(rate, col.id)}
                                     {mobile && <ul>
                                         {

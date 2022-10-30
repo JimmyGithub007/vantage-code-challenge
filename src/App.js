@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Footer from './components/layout/Footer';
 import Header from './components/layout/Header';
+import ErrorPage from './components/pages/ErrorPage';
 import ColumnChart from './components/share/ColumnChart';
 import DataGrid from './components/share/DataGrid';
 import Loader from './components/share/Loader';
@@ -11,6 +12,7 @@ import _ from 'lodash';
 
 const App = () => {
   const [ rates, setRates ] = useState([]);
+  const [ isError, setIsError ] = useState(false);
   const [ loading, setLoading ] = useState(false);
 
   const columns = [
@@ -22,13 +24,16 @@ const App = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`${process.env.REACT_APP_API_URL}`)
+    setIsError(false);
+    axios.get(process.env.REACT_APP_API_URL)
     .then(response => {
       setRates(response.data.rates);
       setTimeout(() => {
         setLoading(false);
       }, 1000)
     }).catch(error => {
+      setLoading(false);
+      setIsError(true);
       console.log('fetch data failed', error);
     })
   }, []);
@@ -38,12 +43,13 @@ const App = () => {
     <div className='content'>
       {
         loading ? <Loader /> :
-        <>
-          <ColumnChart data={_.values(rates)} />
-          <div className='card'>
-            <DataGrid columns={columns} rates={rates} />
-          </div>
-        </>
+        isError ? <ErrorPage /> :
+          <>
+            <ColumnChart data={_.values(rates)} />
+            <div className='card'>
+              <DataGrid columns={columns} rates={rates} />
+            </div>
+          </>
       }
     </div>
     <Footer />
