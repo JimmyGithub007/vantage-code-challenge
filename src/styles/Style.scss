@@ -1,0 +1,248 @@
+@import './animation';
+@import './colors';
+
+body {
+    background-color: $light-gray-color;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+input[type='checkbox'] {
+    accent-color: $primary-color;
+    cursor: pointer;
+    transform : scale(1.2);
+}
+
+.shadow {
+    box-shadow: 0 2px 4px $dark-gray-color;
+}
+
+.header {
+    @extend .shadow;
+    align-items: center;
+    background-color: $primary-color;
+    color: white;
+    display: flex;
+    font-weight: bold;
+    height: 50px;
+    justify-content: space-between;
+    padding: 0 25px;
+    a {
+        align-items: inherit;
+        color: inherit;
+        cursor: pointer;
+        display: flex;
+        gap: 5px;
+        text-decoration: unset;
+    }
+}
+
+.content {
+    min-height: calc(100vh - 180px);
+    padding: 25px;
+}
+
+.footer {
+    align-items: center;
+    background-color: white;
+    color: $dark-gray-color;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 80px;
+    justify-content: center;
+    padding: 0 24px;
+    .icons {
+        display: flex;
+        gap: 10px;
+    }
+}
+
+.tbl {
+    background-color: inherit;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;   
+    th, td {
+        padding: 10px 20px;
+        text-align: right;
+        transition: background-color 500ms;
+        //text overflow ellipsis - start
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        //end
+        &:first-child {
+            width: 20px;
+        }
+        &:first-child, &:nth-child(2) {
+            text-align: left;
+        }
+    }
+    th {
+        border-bottom: 3px solid $light-gray-color-2;
+        position: sticky;
+        top: -0.1px;
+        span {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            svg {
+                color: $dark-color;
+            }
+        }
+        &.sort:hover {
+            cursor: pointer;
+            background-color: $light-gray-color-2;
+        }
+    }
+    td {
+        border-bottom: 1px solid $light-gray-color-2;
+    }
+    tr:hover td, th, .sort {
+        background-color: $light-gray-color;
+    }
+}
+
+.tbl-title {
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .dropdown {
+        display: none;
+    }
+}
+
+.card {
+    @extend .shadow;
+    animation: fadeIn 1s;
+    background-color: white;
+    border: 1px solid $light-gray-color;
+    border-radius: 12px;
+    
+}
+
+.dropdown {
+    cursor: pointer;
+    position: relative;
+    span {
+        display: flex;
+        align-items: center;
+        svg {
+            color: $dark-color;
+            width: 12px;
+            height: 12px;
+        }
+    }
+    .dropdown-content { 
+        @extend .shadow;
+        width: max-content;
+        background-color: white;
+        border-radius: 4px;
+        display: none;
+        position: absolute;
+        z-index: 99;
+        right: 0px;
+        padding: 4px;
+        li {
+            padding: 2px 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            &.active {
+                background-color: $light-gray-color;
+                font-weight: bold;
+            }
+            &:hover {
+                background-color: $light-gray-color-2;
+            }
+        }
+    }
+    &:hover {
+        .dropdown-content {
+            display: block;
+        }
+    }
+}
+
+.pagination {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    background-color: inherit;
+    padding: 10px 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: flex-end;
+    svg {
+        cursor: pointer;
+        &.disabled {
+            color: $dark-gray-color;
+            cursor: not-allowed;
+        }
+    }
+}
+  
+.loader {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: inherit;
+    .container {
+        height: 15px;
+        width: 105px;
+        display: flex;
+        position: relative;
+        .circle {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: $primary-color;
+            animation: move 500ms linear 0ms infinite;
+            margin-right: 30px;
+            &:first-child {
+                position: absolute;
+                top: 0;
+                left: 0;
+                animation: grow 500ms linear 0ms infinite;
+            }
+            &:last-child {
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin-right: 0;
+                animation: grow 500ms linear 0s infinite reverse;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .tbl-title {
+        .dropdown {
+            display: block;
+        }
+    }
+    .tbl {
+        th {
+            &.sort:hover {
+                cursor: unset;
+                background-color: $light-gray-color;
+            }
+        }
+        td {
+            background-color: unset;
+        }
+    }
+}
+
+@media screen and (max-width: 408px) {
+    .pagination {
+        flex-direction: column;
+    }
+}
