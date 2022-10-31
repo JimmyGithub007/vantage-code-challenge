@@ -76,11 +76,13 @@ input[type='checkbox'] {
         padding: 10px 20px;
         text-align: right;
         transition: background-color 500ms;
-        //text overflow ellipsis - start
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        //end
+        &:not(:first-child) {
+            //text overflow ellipsis - start
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            //end
+        }
         &:first-child {
             width: 20px;
         }
@@ -91,7 +93,7 @@ input[type='checkbox'] {
     th {
         border-bottom: 3px solid $light-gray-color-2;
         position: sticky;
-        top: -0.1px;
+        top: 50px;
         z-index: 1;
         span {
             align-items: center;
@@ -115,12 +117,20 @@ input[type='checkbox'] {
 }
 
 .tbl-title {
-    padding: 0 20px;
-    display: flex;
     align-items: center;
+    background-color: white;
+    display: flex;
+    height: 50px;
     justify-content: space-between;
+    padding: 0 20px;
+    position: sticky;
+    top: 0px;
+    z-index: 2;
     .dropdown {
         display: none;
+    }
+    h3 {
+        margin: 0;
     }
 }
 
@@ -151,7 +161,6 @@ input[type='checkbox'] {
         border-radius: 4px;
         display: none;
         position: absolute;
-        z-index: 99;
         right: 0px;
         padding: 4px;
         li {
@@ -258,7 +267,14 @@ input[type='checkbox'] {
     }
 }
 
-@media screen and (max-width: 408px) {
+@media screen and (max-width: 420px) {
+    .pagination {
+        gap: 0;
+        justify-content: space-between;
+    }
+}
+
+@media screen and (max-width: 380px) {
     .pagination {
         flex-direction: column;
     }
