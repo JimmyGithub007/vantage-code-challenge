@@ -271,6 +271,7 @@ input[type='checkbox'] {
     animation: fadeIn 1s;
     flex-direction: column;
     min-height: calc(100vh - 200px);
+    text-align: center;
     svg {
         color: $dark-gray-color;
         height: 120px;
