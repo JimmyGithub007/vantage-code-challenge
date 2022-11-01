@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
+import { AiOutlineLeft, AiOutlineRight, AiOutlineSearch } from 'react-icons/ai'
 import { BiSortAZ, BiSortAlt2, BiSortZA } from 'react-icons/bi'
-import { FaSortDown } from 'react-icons/fa'
 import _ from 'lodash';
 import '../../styles/Style.scss';
+import DropDown from './DropDown';
 
 const DataGrid = (props) => {
     const sortListing = [ 'asc', 'desc' ];
@@ -17,6 +17,31 @@ const DataGrid = (props) => {
     const [ checkedState, setCheckedState] = useState(
         new Array(_.size(props.rates)).fill(false)
     );
+    const [ search, setSearch] = useState(
+        props.columns.filter(c => c.search === true).map(column => {
+            return { id: column.id, keyword: '' }
+        })
+    );
+
+    const totalSearch = () => {
+        let total = 0;
+        search.forEach((s, k) => {
+            if(s.keyword.length > 0) {
+                total += 1;
+            }
+        })
+        return total;
+    }
+
+    const handleSearch = (id, keyword) => {
+        setPageNum(0);
+        setSearch(prev => {
+            return prev.map(item => {
+                return item.id === id ? { ...item, keyword: keyword } : item
+            })
+        })
+        handleSetCheck(false, new Array(_.size(props.rates)).fill(false));
+    }
 
     const handleSort = (orderId) => {
         let direction = 'asc';
@@ -30,11 +55,23 @@ const DataGrid = (props) => {
         setOrder({ direction, id: direction ? orderId : null });
     }
 
+    const handleFilter = () => {
+        return _.filter(props.rates, (v) => {
+            let show = true;
+            search.forEach((s, k) => {
+                if(!v[s.id].toLowerCase().includes(String(s.keyword).toLowerCase())) {
+                    show = false;
+                }
+            })
+            return show;
+        })
+    }
+
     const disableBtn = (type) => {
         if(type === 1) {
             if(pageNum === 0) return true;
         } else if(type === 2) {
-            if(pageNum * rowsPerPage + rowsPerPage >= _.size(props.rates)) return true;
+            if(pageNum * rowsPerPage + rowsPerPage >= _.size(handleFilter())) return true;
         }
         return false;
     }
@@ -44,12 +81,16 @@ const DataGrid = (props) => {
         else { setMobile(false); }
     }
 
+    const handleSetCheck = (all, each) => {
+        setCheckedAll(all); 
+        setCheckedState(each);
+    }
+
     const handleOnChange = (position) => {
         const updatedCheckedState = checkedState.map((item, index) =>
             index === position ? !item : item
         );
-        setCheckedAll(!_.includes(updatedCheckedState, false));
-        setCheckedState(updatedCheckedState);
+        handleSetCheck(!_.includes(updatedCheckedState, false), updatedCheckedState);
     }
 
     useEffect(() => {
@@ -66,28 +107,38 @@ const DataGrid = (props) => {
     return (<div>
         <div className='tbl-title'>
             <h3>Rates</h3>
-            <div className='dropdown'>
-                <span>sort by { !order.id ? 'default' : order.id+' '+order.direction} {order.id && ( order.direction === 'asc' ? <BiSortAZ /> : <BiSortZA /> ) }<FaSortDown /></span>
-                <div className='dropdown-content'>
+            <div className='tbl-filter'>
+                <DropDown className='mobile-view' title={<>sort by {!order.id ? 'default' : order.id + ' ' + order.direction} {order.id && (order.direction === 'asc' ? <BiSortAZ /> : <BiSortZA />)}</>}>
                     <ul>
-                        <li className={`${order.id === null && order.direction === null && 'active'}`} onClick={() => setOrder({ id: null, direction: null }) }>sort by default</li>
+                        <li className={`${order.id === null && order.direction === null && 'active'}`} onClick={() => setOrder({ id: null, direction: null })}>sort by default</li>
                         {
                             props.columns.map((col, k1) => (
                                 sortListing.map((sort, k2) => (
-                                    <li className={`${col.id === order.id && sort === order.direction && 'active'}`} onClick={() => setOrder({ id: col.id, direction: sort }) } key={k1+k2}>
-                                        sort by {col.id} {sort} {sort === 'asc' ? <BiSortAZ /> : <BiSortZA /> }
+                                    <li className={`${col.id === order.id && sort === order.direction && 'active'}`} onClick={() => setOrder({ id: col.id, direction: sort })} key={k1 + k2}>
+                                        sort by {col.id} {sort} {sort === 'asc' ? <BiSortAZ /> : <BiSortZA />}
                                     </li>
-                                )) 
+                                ))
                             ))
                         }
                     </ul>
-                </div>
+                </DropDown>
+                <DropDown className='search' title={<span><AiOutlineSearch />{ totalSearch() > 0 && <span className='badge'>{ totalSearch() }</span> }</span>}>
+                    <ul>
+                        {
+                            props.columns.map((col, key) => (
+                                col.search && <li key={key}>
+                                    <input className='input-text' onChange={(e) => handleSearch(col.id, e.target.value)} placeholder={col.id.toUpperCase()+' KEYWORD'} />
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </DropDown>
             </div>
         </div>
         <table className='tbl'>
             <thead>
                 <tr>
-                    <th><input type='checkbox' checked={checkedAll} onChange={() => { setCheckedAll(!checkedAll); setCheckedState(new Array(_.size(props.rates)).fill(!checkedAll)) } } /></th>
+                    <th><input type='checkbox' checked={checkedAll} onChange={() => handleSetCheck(!checkedAll, new Array(_.size(handleFilter())).fill(!checkedAll)) } /></th>
                     {
                         props.columns.map((col, key) => (
                             ((mobile && key < 1) || !mobile) &&
@@ -104,8 +155,8 @@ const DataGrid = (props) => {
                 </tr>
             </thead>
             <tbody>
-            {
-                _.orderBy(props.rates, [order.id], [order.direction])
+            {   _.size(handleFilter()) > 0 ?
+                _.orderBy(handleFilter(), [order.id], [order.direction])
                 .slice(pageNum * rowsPerPage, pageNum * rowsPerPage + rowsPerPage)
                 .map((rate, k1) => {
                     const k = k1+(pageNum * rowsPerPage);
@@ -133,27 +184,24 @@ const DataGrid = (props) => {
                             ))
                         }
                     </tr>
-                })
+                }) : <tr><td className='no-data' colSpan={props.columns.length+1}>No data found</td></tr>
             }
             </tbody>
         </table>
         <div className='pagination'>
             <span>Rows per page:</span>
-            <div className='dropdown'>
-                <span>{rowsPerPage} <FaSortDown /></span>
-                <div className='dropdown-content'>
-                    <ul>
-                        {
-                            rowsPerPages.map((p, key) => (
-                                rowsPerPage !== p && <li key={key} onClick={() => { setPageNum(0); setRowsPerPage(p); } }>{p} / page</li>
-                            ))
-                        }
-                    </ul>
-                </div>
-            </div>
-            <span>{(pageNum * rowsPerPage)+1}-{ disableBtn(2) ? _.size(props.rates) : pageNum * rowsPerPage + rowsPerPage } of {_.size(props.rates)}</span>
-            <AiOutlineLeft className={`${disableBtn(1) && 'disabled'}`} onClick={() => { if(!disableBtn(1)) { let num = pageNum; setPageNum(num-1) }} } />
-            <AiOutlineRight className={`${disableBtn(2) && 'disabled'}`} onClick={() => { if(!disableBtn(2)) { let num = pageNum; setPageNum(num+1) }} } />
+            <DropDown title={rowsPerPage}>
+                <ul>
+                    {
+                        rowsPerPages.map((p, key) => (
+                            rowsPerPage !== p && <li key={key} onClick={() => { setPageNum(0); setRowsPerPage(p); }}>{p} / page</li>
+                        ))
+                    }
+                </ul>
+            </DropDown>
+            <span>{(pageNum * rowsPerPage)+(_.size(handleFilter()) > 0 && 1)}-{ disableBtn(2) ? _.size(handleFilter()) : pageNum * rowsPerPage + rowsPerPage } of {_.size(handleFilter())}</span>
+            <AiOutlineLeft className={`btn ${disableBtn(1) && 'disabled'}`} onClick={() => { if(!disableBtn(1)) { let num = pageNum; setPageNum(num-1) }} } />
+            <AiOutlineRight className={`btn ${disableBtn(2) && 'disabled'}`} onClick={() => { if(!disableBtn(2)) { let num = pageNum; setPageNum(num+1) }} } />
         </div>
     </div>)
 }
