@@ -13,7 +13,7 @@ import _ from 'lodash';
 const App = () => {
   const [ rates, setRates ] = useState([]);
   const [ isError, setIsError ] = useState(false);
-  const [ loading, setLoading ] = useState(false);
+  const [ loading, setLoading ] = useState(true);
 
   const columns = [
     { id: 'name', name: 'Name', search: true },
@@ -22,20 +22,22 @@ const App = () => {
     { id: 'value', name: 'value', search: false }
   ];
 
-  useEffect(() => {
-    setLoading(true);
-    setIsError(false);
-    axios.get(process.env.REACT_APP_API_URL)
-    .then(response => {
+  const getAPI = async () => {
+    try {
+      const response = await axios.get(process.env.REACT_APP_API_URL);
       setRates(response.data.rates);
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000)
-    }).catch(error => {
-      setLoading(false);
+    } catch (error) {
       setIsError(true);
       console.log('fetch data failed', error);
-    })
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
+  }
+
+  useEffect(() => {
+    getAPI();
   }, []);
 
   return (<>

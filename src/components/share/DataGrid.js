@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AiOutlineLeft, AiOutlineRight, AiOutlineSearch } from 'react-icons/ai'
 import { BiSortAZ, BiSortAlt2, BiSortZA } from 'react-icons/bi'
 import _ from 'lodash';
@@ -23,7 +23,7 @@ const DataGrid = (props) => {
         })
     );
 
-    const totalSearch = () => {
+    const totalSearch = useMemo(() => {
         let total = 0;
         search.forEach((s, k) => {
             if(s.keyword.length > 0) {
@@ -31,7 +31,7 @@ const DataGrid = (props) => {
             }
         })
         return total;
-    }
+    }, [search])
 
     const handleSearch = (id, keyword) => {
         setPageNum(0);
@@ -55,7 +55,7 @@ const DataGrid = (props) => {
         setOrder({ direction, id: direction ? orderId : null });
     }
 
-    const handleFilter = () => {
+    const handleFilter = useMemo(() => {
         return _.filter(props.rates, (v) => {
             let show = true;
             search.forEach((s, k) => {
@@ -65,16 +65,17 @@ const DataGrid = (props) => {
             })
             return show;
         })
-    }
+    }, [props.rates, search]);
 
-    const disableBtn = (type) => {
-        if(type === 1) {
-            if(pageNum === 0) return true;
-        } else if(type === 2) {
-            if(pageNum * rowsPerPage + rowsPerPage >= _.size(handleFilter())) return true;
-        }
+    const disableBtn1 = useMemo(() => {
+        if(pageNum === 0) return true;
         return false;
-    }
+    }, [pageNum]);
+
+    const disableBtn2 = useMemo(() => {
+        if(pageNum * rowsPerPage + rowsPerPage >= _.size(handleFilter)) return true;
+        return false;
+    }, [pageNum, rowsPerPage, handleFilter]);
 
     const handleWindowResize = () => {
         if (window.innerWidth < 576) { setMobile(true); }
@@ -122,7 +123,7 @@ const DataGrid = (props) => {
                         }
                     </ul>
                 </DropDown>
-                <DropDown className='search' title={<span><AiOutlineSearch />{ totalSearch() > 0 && <span className='badge'>{ totalSearch() }</span> }</span>}>
+                <DropDown className='search' title={<span><AiOutlineSearch />{ totalSearch > 0 && <span className='badge'>{ totalSearch }</span> }</span>}>
                     <ul>
                         {
                             props.columns.map((col, key) => (
@@ -138,7 +139,7 @@ const DataGrid = (props) => {
         <table className='tbl'>
             <thead>
                 <tr>
-                    <th><input type='checkbox' checked={checkedAll} onChange={() => handleSetCheck(!checkedAll, new Array(_.size(handleFilter())).fill(!checkedAll)) } /></th>
+                    <th><input type='checkbox' checked={checkedAll} onChange={() => handleSetCheck(!checkedAll, new Array(_.size(handleFilter)).fill(!checkedAll)) } /></th>
                     {
                         props.columns.map((col, key) => (
                             ((mobile && key < 1) || !mobile) &&
@@ -155,8 +156,8 @@ const DataGrid = (props) => {
                 </tr>
             </thead>
             <tbody>
-            {   _.size(handleFilter()) > 0 ?
-                _.orderBy(handleFilter(), [order.id], [order.direction])
+            {   _.size(handleFilter) > 0 ?
+                _.orderBy(handleFilter, [order.id], [order.direction])
                 .slice(pageNum * rowsPerPage, pageNum * rowsPerPage + rowsPerPage)
                 .map((rate, k1) => {
                     const k = k1+(pageNum * rowsPerPage);
@@ -199,9 +200,9 @@ const DataGrid = (props) => {
                     }
                 </ul>
             </DropDown>
-            <span>{(pageNum * rowsPerPage)+(_.size(handleFilter()) > 0 && 1)}-{ disableBtn(2) ? _.size(handleFilter()) : pageNum * rowsPerPage + rowsPerPage } of {_.size(handleFilter())}</span>
-            <AiOutlineLeft className={`btn ${disableBtn(1) && 'disabled'}`} onClick={() => { if(!disableBtn(1)) { let num = pageNum; setPageNum(num-1) }} } />
-            <AiOutlineRight className={`btn ${disableBtn(2) && 'disabled'}`} onClick={() => { if(!disableBtn(2)) { let num = pageNum; setPageNum(num+1) }} } />
+            <span>{(pageNum * rowsPerPage)+(_.size(handleFilter) > 0 && 1)}-{ disableBtn2 ? _.size(handleFilter) : pageNum * rowsPerPage + rowsPerPage } of {_.size(handleFilter)}</span>
+            <AiOutlineLeft className={`btn ${disableBtn1 && 'disabled'}`} onClick={() => { if(!disableBtn1) { let num = pageNum; setPageNum(num-1) }} } />
+            <AiOutlineRight className={`btn ${disableBtn2 && 'disabled'}`} onClick={() => { if(!disableBtn2) { let num = pageNum; setPageNum(num+1) }} } />
         </div>
     </div>)
 }
