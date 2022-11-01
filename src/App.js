@@ -16,10 +16,10 @@ const App = () => {
   const [ loading, setLoading ] = useState(false);
 
   const columns = [
-    { id: 'name', name: 'Name' },
-    { id: 'type', name: 'Type' },
-    { id: 'unit', name: 'Unit' },
-    { id: 'value', name: 'value' }
+    { id: 'name', name: 'Name', search: true },
+    { id: 'type', name: 'Type', search: true },
+    { id: 'unit', name: 'Unit', search: true },
+    { id: 'value', name: 'value', search: false }
   ];
 
   useEffect(() => {

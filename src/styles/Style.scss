@@ -48,7 +48,7 @@ input[type='checkbox'] {
 }
 
 .content {
-    min-height: calc(100vh - 180px);
+    min-height: calc(100vh - 200px);
     padding: 25px;
 }
 
@@ -58,7 +58,7 @@ input[type='checkbox'] {
     color: $dark-gray-color;
     flex-direction: column;
     gap: 10px;
-    height: 80px;
+    height: 100px;
     padding: 0 24px;
     .icons {
         display: flex;
@@ -110,6 +110,9 @@ input[type='checkbox'] {
     }
     td {
         border-bottom: 1px solid $light-gray-color-2;
+        &.no-data {
+            text-align: center;
+        }
     }
     tr:hover td, th, .sort-td {
         background-color: $light-gray-color;
@@ -126,8 +129,32 @@ input[type='checkbox'] {
     position: sticky;
     top: 0px;
     z-index: 2;
-    .dropdown {
-        display: none;
+    .tbl-filter {
+        align-items: center;
+        display: flex;
+        gap: 10px;
+    }
+    .search {
+        svg:first-child {
+            height: 16px;
+            width: 16px;
+            position: relative;
+        }
+        .badge {
+            @extend .shadow;
+            align-items: center;
+            background-color: $primary-color;
+            border-radius: 100%;
+            color: white;
+            font-size: 0.7rem;
+            height: 12px;
+            justify-content: center;
+            left: 7px;
+            padding: 1px;
+            position: absolute;
+            top: -7px;
+            width: 12px;
+        }
     }
     h3 {
         margin: 0;
@@ -156,6 +183,7 @@ input[type='checkbox'] {
     }
     .dropdown-content { 
         @extend .shadow;
+        animation: fadeIn 300ms;
         width: max-content;
         background-color: white;
         border-radius: 4px;
@@ -163,8 +191,11 @@ input[type='checkbox'] {
         position: absolute;
         right: 0px;
         padding: 4px;
+        &.show {
+            display: block;
+        }
         li {
-            padding: 2px 4px;
+            padding: 4px;
             cursor: pointer;
             border-radius: 4px;
             &.active {
@@ -174,11 +205,6 @@ input[type='checkbox'] {
             &:hover {
                 background-color: $light-gray-color-2;
             }
-        }
-    }
-    &:hover {
-        .dropdown-content {
-            display: block;
         }
     }
 }
@@ -192,12 +218,19 @@ input[type='checkbox'] {
     gap: 15px;
     align-items: center;
     justify-content: flex-end;
-    svg {
-        cursor: pointer;
-        &.disabled {
-            color: $dark-gray-color;
-            cursor: not-allowed;
-        }
+}
+
+.btn {
+    cursor: pointer;
+    padding: 5px;
+    &.disabled {
+        color: $dark-gray-color;
+        cursor: not-allowed;
+    }
+    &:not(.disabled):hover {
+        color: white;
+        background-color: $dark-gray-color;
+        border-radius: 100%;
     }
 }
   
@@ -237,7 +270,7 @@ input[type='checkbox'] {
     @extend .flex-center;
     animation: fadeIn 1s;
     flex-direction: column;
-    min-height: calc(100vh - 180px);
+    min-height: calc(100vh - 200px);
     svg {
         color: $dark-gray-color;
         height: 120px;
@@ -248,11 +281,24 @@ input[type='checkbox'] {
     }
 }
 
+.input-text {
+    border: 2px solid $dark-gray-color;
+    border-radius: 4px;
+    height: 30px;
+    padding-left: 10px;
+    &:focus {
+        outline: none;
+        border: 2px solid $primary-color;
+    }
+}
+
+.mobile-view {
+    display: none;
+}
+
 @media screen and (max-width: 576px) {
-    .tbl-title {
-        .dropdown {
-            display: block;
-        }
+    .mobile-view {
+        display: block;
     }
     .tbl {
         th {
@@ -264,6 +310,9 @@ input[type='checkbox'] {
         .sort-td {
             background-color: white;
         }
+    }
+    input[type='checkbox'] {
+        transform : scale(1.5);
     }
 }
 

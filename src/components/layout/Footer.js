@@ -1,4 +1,4 @@
-import { SiLodash, SiSass } from 'react-icons/si'
+import { SiLodash, SiNetlify, SiSass } from 'react-icons/si'
 import { GrReactjs } from 'react-icons/gr'
 import '../../styles/Style.scss';
 
@@ -8,8 +8,10 @@ const Footer = () => {
         <div className='icons'>
             <GrReactjs />
             <SiSass />
-            <SiLodash />            
+            <SiLodash />    
+            <SiNetlify />        
         </div>
+        Hosting by Netlify
     </div>);
 }
 
